@@ -1,12 +1,10 @@
 {% from 'atlassian-jira/map.jinja' import jira with context %}
 
-include:
-  - java
-
 jira-dependencies:
   pkg.installed:
     - pkgs:
-      - libxslt
+      - libxslt1.1
+      - xsltproc
 
 jira:
   file.managed:

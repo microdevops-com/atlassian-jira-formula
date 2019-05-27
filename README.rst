@@ -2,16 +2,11 @@
 atlassian-jira-formula
 ============================
 
-.. image:: https://travis-ci.org/XITASO/atlassian-jira-formula.svg?branch=master
-    :target: https://travis-ci.org/XITASO/atlassian-jira-formula
-
 Installs Atlassian JIRA Software.
+Fork adapted to xenial.
 
 Available states
 ================
-
-.. contents::
-    :local:
 
 ``atlassian-jira``
 ------------

@@ -1,12 +1,12 @@
 {% import_yaml 'atlassian-jira/defaults.yaml' as default_settings %}
 {% set jira = salt['pillar.get']('atlassian-jira', default=default_settings.get('atlassian-jira'), merge=True) %}
-{%- from 'java/map.jinja' import java with context %}
+{% set java_home = salt['pillar.get']('java_home') %}
 
 {% do jira.update({
   'url': jira.get('url', 'https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-' + jira.version + '.tar.gz'),
   'url_hash': jira.get('url_hash', 'https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-' + jira.version + '.tar.gz.md5'),
   'pid': jira.dir + '/home/jira.pid',
-  'java_home': java.jre8.home,
+  'java_home': java_home,
   'dirs': {
     'scripts': jira.dir + '/scripts',
     'home': jira.dir + '/home',

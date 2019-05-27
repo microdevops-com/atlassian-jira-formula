@@ -1,12 +1,13 @@
 atlassian-jira:
+  version: 8.2.0
+  dir: /opt/atlassian/jira
+  user: jira
+  group: jira
   ajp_port: 8009
   http_port: 8080
-  crowdSSO: True
-  crowd:
-    application.name: Example Jira
-    application.password: SecretPassword
-    crowd.base.url: http://crowd.example.com/crowd/
-  managedb: False
   db:
+    type: postgres72
+    schema: public
+    url: jdbc:postgresql://localhost:5432/jira
     username: jira-db-user
     password: jira-db-password
