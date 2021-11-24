@@ -1,10 +1,81 @@
 {% from 'atlassian-jira/map.jinja' import jira with context %}
 
+nginx_install:
+  pkg.installed:
+    - pkgs:
+      - nginx
+
+nginx_files_1:
+  file.managed:
+    - name: /etc/nginx/nginx.conf
+    - contents: |
+        worker_processes 4;
+        worker_rlimit_nofile 40000;
+        events {
+            worker_connections 8192;
+            use epoll;
+            multi_accept on;
+        }
+        http {
+            include /etc/nginx/mime.types;
+            default_type application/octet-stream;
+            sendfile on;
+            tcp_nopush on;
+            tcp_nodelay on;
+            gzip on;
+            gzip_comp_level 4;
+            gzip_types text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+            gzip_vary on;
+            gzip_proxied any;
+            client_max_body_size 1000m;
+            server {
+                listen 80;
+                return 301 https://$host$request_uri;
+            }
+            server {
+                listen 443 ssl;
+                server_name {{ pillar["atlassian-jira"]["http_proxyName"] }};
+                ssl_certificate /opt/acme/cert/atlassian-jira_{{ pillar["atlassian-jira"]["http_proxyName"] }}_fullchain.cer;
+                ssl_certificate_key /opt/acme/cert/atlassian-jira_{{ pillar["atlassian-jira"]["http_proxyName"] }}_key.key;
+                client_max_body_size 200M;
+                client_body_buffer_size 128k;
+                location / {
+                    proxy_pass http://localhost:{{ pillar["atlassian-jira"]["http_port"] }};
+                    proxy_set_header X-Forwarded-Host $host;
+                    proxy_set_header X-Forwarded-Server $host;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                }
+            }
+        }
+
+nginx_files_2:
+  file.absent:
+    - name: /etc/nginx/sites-enabled/default
+
+nginx_cert:
+  cmd.run:
+    - shell: /bin/bash
+    - name: "/opt/acme/home/{{ pillar["atlassian-jira"]["acme_account"] }}/verify_and_issue.sh atlassian-jira {{ pillar["atlassian-jira"]["http_proxyName"] }}"
+
+nginx_reload:
+  cmd.run:
+    - runas: root
+    - name: service nginx configtest && service nginx restart
+
+nginx_reload_cron:
+  cron.present:
+    - name: /usr/sbin/service nginx configtest && /usr/sbin/service nginx restart
+    - identifier: nginx_reload
+    - user: root
+    - minute: 15
+    - hour: 6
+
 jira-dependencies:
   pkg.installed:
     - pkgs:
       - libxslt1.1
       - xsltproc
+      - openjdk-11-jdk
 
 jira:
   file.managed:
@@ -69,7 +140,6 @@ jira-server-xsl:
     - source: salt://atlassian-jira/files/server.xsl
     - template: jinja
     - require:
-      - file: jira-install
       - file: jira-temptdir
 
   cmd.run:
@@ -83,6 +153,7 @@ jira-server-xsl:
           -o {{ jira.dirs.temp }}/server.xml {{ jira.dirs.temp }}/server.xsl server.xml
     - cwd: {{ jira.dirs.install }}/conf
     - require:
+      - file: jira-install
       - file: jira-server-xsl
 
 jira-server-xml:
@@ -218,4 +289,3 @@ jira-enable-SSOSeraphAuthenticator:
       - file: jira-install
     - watch_in:
       - service: jira
-
