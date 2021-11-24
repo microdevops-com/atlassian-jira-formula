@@ -1,3 +1,4 @@
+{% if pillar["atlassian-jira"] is defined %}
 {% from 'atlassian-jira/map.jinja' import jira with context %}
 
 nginx_install:
@@ -289,3 +290,4 @@ jira-enable-SSOSeraphAuthenticator:
       - file: jira-install
     - watch_in:
       - service: jira
+{% endif %}
