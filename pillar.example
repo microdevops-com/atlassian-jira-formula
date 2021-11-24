@@ -1,10 +1,15 @@
 atlassian-jira:
-  version: 8.2.4
+  acme_account: example.com
+  version: 8.20.2
   dir: /opt/atlassian/jira
   user: jira
   group: jira
   ajp_port: 8009
   http_port: 8080
+  http_scheme: https
+  http_proxyName: jira.example.com
+  http_proxyPort: 443
+  catalina_opts: -Xms1536m -Xmx6144m
   db:
     type: postgres72
     schema: public
