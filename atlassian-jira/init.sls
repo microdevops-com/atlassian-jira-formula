@@ -107,6 +107,27 @@ jira:
     - enable: True
     - require:
       - file: jira
+  {%- if "fix" in pillar["atlassian-jira"] %}
+      - file: atlassian-agent_file
+      - file: atlassian-agent_javaopts
+
+atlassian-agent_file:
+  file.managed:
+    - name: /opt/atlassian/atlassian-agent.jar
+    - source: {{ pillar["atlassian-jira"]["fix"]["atlassian-agent"] }}
+    - require:
+      - archive: jira-install
+
+atlassian-agent_javaopts:
+  file.replace:
+    - name: '/opt/atlassian/jira/scripts/env.sh'
+    - pattern: '^ *export JAVA_OPTS=.*$'
+    - repl: 'export JAVA_OPTS="-javaagent:/opt/atlassian/atlassian-agent.jar ${JAVA_OPTS}"'
+    - append_if_not_found: True
+    - require:
+      - file: jira-script-env.sh
+  {%- endif %}
+
 
 jira-graceful-down:
   service.dead:
