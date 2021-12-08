@@ -107,6 +107,26 @@ jira:
     - enable: True
     - require:
       - file: jira
+  {%- if "addon" in pillar["atlassian-jira"] %}
+      - file: addon
+    {%- if "javaopts" in pillar["atlassian-jira"]["addon"] %}
+      - file: addon-javaopts
+addon-javaopts:
+  file.replace:
+    - name: '/opt/atlassian/jira/scripts/env.sh'
+    - pattern: '^ *export JAVA_OPTS=.*$'
+    - repl: 'export JAVA_OPTS="{{ pillar["atlassian-jira"]["addon"]["javaopts"] }} ${JAVA_OPTS}"'
+    - append_if_not_found: True
+    - require:
+      - file: jira-script-env.sh
+    {%- endif %}
+addon:
+  file.managed:
+    - name: {{ pillar["atlassian-jira"]["addon"]["target"] }}
+    - source: {{ pillar["atlassian-jira"]["addon"]["source"] }}
+    - require:
+      - archive: jira-install
+  {%- endif %}
 
 jira-graceful-down:
   service.dead:
