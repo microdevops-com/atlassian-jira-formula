@@ -113,7 +113,7 @@ jira:
       - file: addon-javaopts
 addon-javaopts:
   file.replace:
-    - name: '/opt/atlassian/jira/scripts/env.sh'
+    - name: '{{ pillar["atlassian-jira"]["dir"] }}/scripts/env.sh'
     - pattern: '^ *export JAVA_OPTS=.*$'
     - repl: 'export JAVA_OPTS="{{ pillar["atlassian-jira"]["addon"]["javaopts"] }} ${JAVA_OPTS}"'
     - append_if_not_found: True
