@@ -76,7 +76,7 @@ jira-dependencies:
     - pkgs:
       - libxslt1.1
       - xsltproc
-      - openjdk-11-jdk
+      - openjdk-17-jdk
 
 jira:
   file.managed:
