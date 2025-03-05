@@ -34,7 +34,7 @@ nginx_files_1:
                 return 301 https://$host$request_uri;
             }
             server {
-                listen 443 ssl;
+                listen 443 ssl http2;
                 server_name {{ pillar["atlassian-jira"]["http_proxyName"] }};
                 ssl_certificate /opt/acme/cert/atlassian-jira_{{ pillar["atlassian-jira"]["http_proxyName"] }}_fullchain.cer;
                 ssl_certificate_key /opt/acme/cert/atlassian-jira_{{ pillar["atlassian-jira"]["http_proxyName"] }}_key.key;
@@ -45,6 +45,10 @@ nginx_files_1:
                     proxy_set_header X-Forwarded-Host $host;
                     proxy_set_header X-Forwarded-Server $host;
                     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_http_version 1.1;
+                    proxy_set_header Connection "";
+                    proxy_buffers 16 16k;
+                    proxy_buffer_size 16k;
                 }
             }
         }
