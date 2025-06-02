@@ -1,18 +1,33 @@
 atlassian-jira:
-  acme_account: example.com
-  version: 8.20.2
+  addon:
+    source: 'salt://atlassian/addon/atlassian-addon-v1.2.3/atlassian-addon.addon'
+    target: '/opt/atlassian/atlassian-addon.addon'
+    javaopts: '-javaagent:/opt/atlassian/atlassian-addon.addon'
+  version: 10.3.6
+  acme_configs:
+    - name: example_com
+      domains:
+        - jira.example.com
+    - name: new-exmpl3_com
+      domains:
+        - jira.new-exmpl3.com
+        - jira1.new-exmpl3.com
+        - jira2.new-exmpl3.com
+  nginx_forwards:
+    - jira.example.com
+    - jira1.new-exmpl3.com
+    - jira2.new-exmpl3.com
   dir: /opt/atlassian/jira
   user: jira
   group: jira
-  ajp_port: 8009
   http_port: 8080
   http_scheme: https
-  http_proxyName: jira.example.com
+  http_proxyName: jira.new-exmpl3.com
   http_proxyPort: 443
   catalina_opts: -Xms1536m -Xmx6144m
   db:
     type: postgres72
     schema: public
-    url: jdbc:postgresql://localhost:5432/jira
-    username: jira-db-user
-    password: jira-db-password
+    url: jdbc:postgresql://localhost:5432/jira-example
+    username: jira-example
+    password: ZXXXXXXzzzZZ
