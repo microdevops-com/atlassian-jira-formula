@@ -4,6 +4,7 @@ atlassian-jira:
     target: '/opt/atlassian/atlassian-addon.addon'
     javaopts: '-javaagent:/opt/atlassian/atlassian-addon.addon'
   version: 10.3.6
+  java_version: 21
   acme_configs:
     - name: example_com
       domains:
