@@ -100,7 +100,7 @@ jira-dependencies:
     - pkgs:
       - libxslt1.1
       - xsltproc
-      - openjdk-{{ pillar["atlassian-servicedesk"].get("java_version", 17) }}-jdk
+      - openjdk-{{ pillar["atlassian-jira"].get("java_version", 17) }}-jdk
 
 jira:
   file.managed:
